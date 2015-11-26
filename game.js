@@ -21,6 +21,11 @@ Audio.prototype.playFromStart = function() {
 var Obstacle = function() {
     var MIN_SIZE = 20;
     var MAX_SIZE = 60;
+    if (CANVAS_WIDTH < 800) {
+	MIN_SIZE = 15;
+	MAX_SIZE = 40;
+    }
+    
     var MIN_SPEED = 0.5;
     var MAX_SPEED = 3;
     var canvas = document.getElementById('game-canvas');
@@ -200,6 +205,29 @@ var Game = function() {
 	that.player.removeKey(keyCode);
     };
 
+
+    this.addTouch = function(e) {
+	touches = e.touches;
+	for (var i = 0; i < touches.length; i++) {
+	    if (touches[i].clientX < CANVAS_WIDTH / 2) {
+		that.addKey(LEFT_KEY);
+	    } else {
+		that.addKey(RIGHT_KEY);
+	    }
+	}
+    };
+
+    this.removeTouch = function(e) {
+	touches = e.changedTouches;
+	for (var i = 0; i < touches.length; i++) {
+	    if (touches[i].clientX < CANVAS_WIDTH / 2) {
+		that.removeKey(LEFT_KEY);
+	    } else {
+		that.removeKey(RIGHT_KEY);
+	    }
+	}
+    };
+
     function playerHitGoal() {
 	var check = goal.hittableRect;
 	var p = that.player;
@@ -221,7 +249,6 @@ var Game = function() {
     }
 
     function die() {
-	// TODO: Cool death explosion here
 	deathSound.play();
 	clearInterval(document.gameLoop);
 	deathScene();
@@ -254,6 +281,8 @@ function startGame() {
     addEventListener("keyup", function (e) {
 	game.removeKey(e.keyCode);
     });
+    addEventListener("touchstart", game.addTouch);
+    addEventListener("touchend", game.removeTouch);
     
     document.gameLoop = setInterval(game.update, UPDATE_INTERVAL);
 }
