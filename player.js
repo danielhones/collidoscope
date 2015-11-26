@@ -1,3 +1,8 @@
+/*
+(c) 2015 Daniel Hones
+MIT License
+*/
+
 var CANVAS_WIDTH = window.innerWidth;
 var CANVAS_HEIGHT = window.innerHeight;
 document.getElementById('game-canvas').width = CANVAS_WIDTH;

@@ -1,3 +1,8 @@
+/*
+(c) 2015 Daniel Hones
+MIT License
+*/
+
 var FRAME_RATE = 30;
 var UPDATE_INTERVAL = 1000 / FRAME_RATE;
 
