@@ -6,8 +6,6 @@ MIT License
 var FRAME_RATE = 30;
 var UPDATE_INTERVAL = 1000 / FRAME_RATE;
 
-// Sound effect from https://www.freesound.org/people/ljudman/sounds/33245/
-var deathSound = new Audio('audio/grenade.ogg');
 // Sound effect from https://www.freesound.org/people/leviclaassen/sounds/107789/
 var hitSound = new Audio('audio/hit.ogg');
 var goalSound = new Audio('audio/goal.ogg');
@@ -254,7 +252,6 @@ var Game = function() {
     }
 
     function die() {
-	deathSound.play();
 	clearInterval(document.gameLoop);
 	deathScene();
     }

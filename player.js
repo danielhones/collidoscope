@@ -19,64 +19,65 @@ var Position = function(x, y) {
     this.y = y;
 };
 
-var Vector = function() {
-    var _x = 1;
-    var _y = 0;
-    var _mag = 0;
-    var _dir = 0;  // in radians
+var Vector = function() {};
+Vector.prototype._x = 1;
+Vector.prototype._y = 0;
+Vector.prototype._mag = 0;
+Vector.prototype._dir = 0;  // in radians
+    
+Vector.prototype._updateMagAndDir = function() {
+    this._mag = Math.sqrt(Math.pow(this._x, 2) + Math.pow(this._y, 2));
+    this._dir = Math.atan(this._y/this._x);
+    return this;
+};
 
-    function updateMagAndDir() {
-	_mag = Math.sqrt(Math.pow(_x, 2) + Math.pow(_y, 2));
-	_dir = Math.atan(y/x);
+Vector.prototype._updateXandY = function() {
+    this._x = this._mag * Math.cos(this._dir);
+    this._y = this._mag * Math.sin(this._dir);
+    return this;
+};
+
+Vector.prototype.x = function() {
+    if (arguments.length === 1) {
+	this._x = arguments[0];
+	this._updateMagAndDir();
     }
+    return this._x;
+};
 
-    function updateXandY() {
-	_x = _mag * Math.cos(_dir);
-	_y = _mag * Math.sin(_dir);
+Vector.prototype.y = function() {
+    if (arguments.length === 1) {
+	this._y = arguments[0];
+	this._updateMagAndDir();
     }
-    
-    this.x = function() {
-	if (arguments.length === 1) {
-	    _x = arguments[0];
-	    updateMagAndDir();
-	}
-	return _x;
-    };
+    return this._y;
+};
 
-    this.y = function() {
-	if (arguments.length === 1) {
-	    _y = arguments[0];
-	    updateMagAndDir();
-	}
-	return _y;
-    };
+Vector.prototype.unitX = function() {
+    return this._x / this._mag;
+};
 
-    this.unitX = function() {
-	return _x / _mag;
-    };
-
-    this.unitY = function() {
-	return _y / _mag;
-    };
+Vector.prototype.unitY = function() {
+    return this._y / this._mag;
+};
     
-    this.mag = function() {
-	if (arguments.length === 1) {
-	    delta_mag = arguments[0];
-	    _mag += delta_mag;
-	    updateXandY();
-	}
-	return _mag;
-    };
+Vector.prototype.mag = function() {
+    if (arguments.length === 1) {
+	//delta_mag = arguments[0];
+	this._mag += arguments[0];//delta_mag;
+	this._updateXandY();
+    }
+    return this._mag;
+};
     
-    this.dir = function() {
-	if (arguments.length === 1) {
-	    delta_dir = arguments[0];
-	    _dir += delta_dir;
-	    updateXandY();
-	}
-	return _dir;
-    };
-}
+Vector.prototype.dir = function() {
+    if (arguments.length === 1) {
+	//delta_dir = arguments[0];
+	this._dir += arguments[0];//delta_dir;
+	this._updateXandY();
+    }
+    return this._dir;
+};
     
 var Player = function() {
     var DEFAULT_X = Math.floor(CANVAS_WIDTH / 2);
@@ -94,8 +95,13 @@ var Player = function() {
     var keysDown = {};
     
     this.color = [0, 0, 0, 1];  // rgba() values
-    this.dir = _vector.dir;
-    this.speed = _vector.mag;
+    this.dir = function() {
+	_vector.dir.apply(_vector, arguments);
+    };
+    //this.speed = _vector.mag;
+    this.speed = function() {
+	_vector.mag.apply(_vector, arguments);
+    };			  
 
     this.keyBindings = {};
     this.keyBindings[UP_KEY] = function() {that.speed(SPEED_INCREMENT);};
