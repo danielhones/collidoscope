@@ -4,7 +4,13 @@ MIT License
 */
 
 var FRAME_RATE = 30;
-var UPDATE_INTERVAL = 1000 / FRAME_RATE;
+var UPDATE_INTERVAL = Math.floor(1000 / FRAME_RATE);
+var OBSTACLE_MIN_SIZE = 20;
+var OBSTACLE_MAX_SIZE = 60;
+if (CANVAS_WIDTH < 800 || CANVAS_HEIGHT < 600) {
+    OBSTACLE_MIN_SIZE = 15;
+    OBSTACLE_MAX_SIZE = 40;
+}
 
 // Sound effect from https://www.freesound.org/people/leviclaassen/sounds/107789/
 var hitSound = new Audio('audio/hit.ogg');
@@ -16,86 +22,76 @@ Audio.prototype.playFromStart = function() {
     this.pause();
     this.currentTime = 0;
     this.play();
-}
+};
+
+var canvas = document.getElementById('game-canvas');
+var ctx = canvas.getContext('2d');
 
 
 // TODO: figure out how to make this inherit from Player since there's some duplicate functionality
 // or have Obstacle, Goal, and Player inherit from a common ancestor
 var Obstacle = function() {
-    var MIN_SIZE = 20;
-    var MAX_SIZE = 60;
-    if (CANVAS_WIDTH < 800) {
-	MIN_SIZE = 15;
-	MAX_SIZE = 40;
-    }
-    
-    var MIN_SPEED = 0.5;
-    var MAX_SPEED = 3;
-    var canvas = document.getElementById('game-canvas');
-    var ctx = canvas.getContext('2d');
-    var vector = new Vector();
-    vector.dir(2 * Math.PI * Math.random());
-    vector.mag(MIN_SPEED + (MAX_SPEED - MIN_SPEED) * Math.random());
-    var that = this;
-
+    this.MIN_SPEED = 0.5;
+    this.MAX_SPEED = 3;
+    this.vector = new Vector();
+    this.vector.dir(2 * Math.PI * Math.random());
+    this.vector.mag(this.MIN_SPEED + (this.MAX_SPEED - this.MIN_SPEED) * Math.random());
+    this.randomNum = Math.random();
+    this.x = Math.floor(CANVAS_WIDTH * this.randomNum);
+    this.y = Math.floor(CANVAS_HEIGHT * this.randomNum);
+    this.size = OBSTACLE_MIN_SIZE + Math.floor((OBSTACLE_MAX_SIZE-OBSTACLE_MIN_SIZE) * this.randomNum);
     // The opacity of the obstacle is proportional to the damage it deals:
-    var randomNum = Math.random();
-    var transparency = 0.3 + Math.floor(7*randomNum) / 10;
-    this.color = [255, 0, 0, transparency];
-    this.damage = 1 + Math.floor(9*randomNum);
+    this.transparency = 0.3 + Math.floor(7*this.randomNum) / 10;
+    this.color = [255, 0, 0, this.transparency];
+    this.damage = 1 + Math.floor(9*this.randomNum);
+};
 
-    this.x = Math.floor(CANVAS_WIDTH * Math.random());
-    this.y = Math.floor(CANVAS_HEIGHT * Math.random());
-    this.size = MIN_SIZE + Math.floor((MAX_SIZE-MIN_SIZE) * Math.random());
-
-    this.update = function() {
-	move();
-	checkBounds();
-	that.draw();
-    };
+Obstacle.prototype.update = function() {
+    this.move();
+    this.checkBounds();
+    this.draw();
+};
     
-    this.draw = function() {
-	ctx.fillStyle = 'rgba(' + that.color.join(',') + ')';
-	ctx.fillRect(that.x, that.y, that.size, that.size);
-    };
+Obstacle.prototype.draw = function() {
+    ctx.fillStyle = 'rgba(' + this.color.join(',') + ')';
+    ctx.fillRect(this.x, this.y, this.size, this.size);
+};
 
-    this.pointInside = function(point) {
-	if ((point.x > that.x && point.x < that.x + that.size) &&
-	    (point.y > that.y && point.y < that.y + that.size)) {
-	    return true;
-	} else {
-	    return false;
-	}
-    };
-
-    function move() {
-	that.x += vector.x();
-	that.y += vector.y();
-    }
-
-    function checkBounds() {
-	// Might be cool to have the boundaries reflect rather than teleport
-	if (that.x > CANVAS_WIDTH) {
-	    that.x = 0;
-	}
-	if (that.x < 0) {
-	    that.x = CANVAS_WIDTH;
-	}
-	if (that.y > CANVAS_HEIGHT) {
-	    that.y = 0;
-	}
-	if (that.y < 0) {
-	    that.y = CANVAS_HEIGHT;
-	}
+Obstacle.prototype.pointInside = function(point) {
+    if ((point.x > this.x && point.x < this.x + this.size) &&
+	(point.y > this.y && point.y < this.y + this.size)) {
+	return true;
+    } else {
+	return false;
     }
 };
+
+Obstacle.prototype.move = function() {
+    this.x += this.vector.x();
+    this.y += this.vector.y();
+};
+
+Obstacle.prototype.checkBounds = function() {
+    if (this.x > CANVAS_WIDTH) {
+	this.x = 0;
+    }
+    if (this.x < 0) {
+	this.x = CANVAS_WIDTH;
+    }
+    if (this.y > CANVAS_HEIGHT) {
+	this.y = 0;
+    }
+    if (this.y < 0) {
+	this.y = CANVAS_HEIGHT;
+    }
+};
+
 
 
 var Goal = function() {
     var DEFAULT_SIZE = 8;
     var COURTESY_MARGIN = 4;
-    var canvas = document.getElementById('game-canvas');
-    var ctx = canvas.getContext('2d');
+    //var ctx = canvas.getContext('2d');
     var that = this;
 
     this.size = DEFAULT_SIZE;
@@ -134,8 +130,8 @@ var Game = function() {
     var FONT = '24px sans';
     var FONT_COLOR = '#404040';
     var HEALTH_INCREMENT = 10;
-    var canvas = document.getElementById('game-canvas');
-    var ctx = canvas.getContext('2d');
+    //var canvas = document.getElementById('game-canvas');
+    //var ctx = canvas.getContext('2d');
     var goal = new Goal();
     var playerCurrentlyHit = false;
     var keysDown = {};
@@ -283,9 +279,10 @@ function startGame() {
     addEventListener("keyup", function (e) {
 	game.removeKey(e.keyCode);
     });
+    /*
     addEventListener("touchstart", game.addTouch);
     addEventListener("touchend", game.removeTouch);
-    
+    */
     document.gameLoop = setInterval(game.update, UPDATE_INTERVAL);
 }
 
