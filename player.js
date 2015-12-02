@@ -192,7 +192,6 @@ var Player = function() {
     }
 
     function checkBounds() {
-	// Might be cool to have the boundaries reflect rather than teleport
 	if (that.position.x > CANVAS_WIDTH) {
 	    that.position.x = 0;
 	}
