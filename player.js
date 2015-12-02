@@ -61,17 +61,19 @@ Vector.prototype.unitY = function() {
     return this._y / this._mag;
 };
     
-Vector.prototype.mag = function(delta_mag) {
-    if (delta_mag !== undefined) {
-	this._mag += delta_mag;
+Vector.prototype.mag = function() {
+    if (arguments.length === 1) {
+	//delta_mag = arguments[0];
+	this._mag += arguments[0];//delta_mag;
 	this._updateXandY();
     }
     return this._mag;
 };
     
-Vector.prototype.dir = function(delta_dir) {
-    if (delta_dir !== undefined) {
-	this._dir += delta_dir;
+Vector.prototype.dir = function() {
+    if (arguments.length === 1) {
+	//delta_dir = arguments[0];
+	this._dir += arguments[0];//delta_dir;
 	this._updateXandY();
     }
     return this._dir;
