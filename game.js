@@ -263,7 +263,7 @@ var Game = function() {
 }
 
 function startGame() {
-    document.onclick = false;
+    document.onclick = null;  // For resetting the game after it's played
     var game = new Game();
 
     addEventListener("keydown", function (e) {
