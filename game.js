@@ -132,7 +132,6 @@ var Game = function() {
     var goal = new Goal();
     var playerCurrentlyHit = false;
     var keysDown = {};
-    var count = 0;
     var obstacles = [new Obstacle(), new Obstacle()];
     var that = this;
 
@@ -143,8 +142,6 @@ var Game = function() {
     delete this.player.keyBindings[DOWN_KEY];
 
     this.update = function() {
-	count++;
-	
 	that.clearCanvas();
 	
 	obstacles.forEach(function(i) {
