@@ -2,11 +2,11 @@
 (c) 2015 Daniel Hones
 MIT License
 */
-
+var CANVAS_ID = 'game-canvas';
 var CANVAS_WIDTH = window.innerWidth;
 var CANVAS_HEIGHT = window.innerHeight;
-document.getElementById('game-canvas').width = CANVAS_WIDTH;
-document.getElementById('game-canvas').height = CANVAS_HEIGHT;
+document.getElementById(CANVAS_ID).width = CANVAS_WIDTH;
+document.getElementById(CANVAS_ID).height = CANVAS_HEIGHT;
 
 var UP_KEY = 38;
 var DOWN_KEY = 40;
@@ -85,8 +85,7 @@ var Player = function() {
     var DEFAULT_MAX_HEALTH = 100;
     var SPEED_INCREMENT = 0.2;
     var that = this;
-    var canvas = document.getElementById('game-canvas');
-    var ctx = canvas.getContext('2d');
+    var ctx = document.getElementById(CANVAS_ID).getContext('2d');
     var _WIDTH = 15;
     var _LENGTH = 30;
     var _vector = new Vector();

@@ -2,7 +2,6 @@
 (c) 2015 Daniel Hones
 MIT License
 */
-
 var FRAMES_PER_SECOND = 30;
 var UPDATE_INTERVAL = 1000 / FRAMES_PER_SECOND;
 
@@ -19,8 +18,7 @@ Audio.prototype.playFromStart = function() {
 }
 
 
-// TODO: figure out how to make this inherit from Player since there's some duplicate functionality
-// or have Obstacle, Goal, and Player inherit from a common ancestor
+// TODO: Make this and Player (and possibly Goal) inherit from a common base class
 var Obstacle = function() {
     var MIN_SIZE = 20;
     var MAX_SIZE = 60;
@@ -31,8 +29,7 @@ var Obstacle = function() {
     
     var MIN_SPEED = 0.5;
     var MAX_SPEED = 3;
-    var canvas = document.getElementById('game-canvas');
-    var ctx = canvas.getContext('2d');
+    var ctx = document.getElementById(CANVAS_ID).getContext('2d');
     var vector = new Vector();
     vector.dir(2 * Math.PI * Math.random());
     vector.mag(MIN_SPEED + (MAX_SPEED - MIN_SPEED) * Math.random());
@@ -93,8 +90,7 @@ var Obstacle = function() {
 var Goal = function() {
     var DEFAULT_SIZE = 8;
     var COURTESY_MARGIN = 4;
-    var canvas = document.getElementById('game-canvas');
-    var ctx = canvas.getContext('2d');
+    var ctx = document.getElementById(CANVAS_ID).getContext('2d');
     var that = this;
 
     this.size = DEFAULT_SIZE;
@@ -122,7 +118,6 @@ var Goal = function() {
 };
 
 
-// TODO: Consider making the player regenerate health slowly when he's not hitting anything
 var Game = function() {
     var INITIAL_SPEED = 4;
     var MIN_SPEED = INITIAL_SPEED + 2;  // Can only slow down so much
@@ -133,21 +128,19 @@ var Game = function() {
     var FONT = '24px sans';
     var FONT_COLOR = '#404040';
     var HEALTH_INCREMENT = 10;
-    var canvas = document.getElementById('game-canvas');
-    var ctx = canvas.getContext('2d');
+    var ctx = document.getElementById(CANVAS_ID).getContext('2d');
     var goal = new Goal();
     var playerCurrentlyHit = false;
     var keysDown = {};
     var count = 0;
+    var obstacles = [new Obstacle(), new Obstacle()];
     var that = this;
 
+    this.score = 0;
     this.player = new Player(INITIAL_SPEED);
     // So they can't control the speed:
     delete this.player.keyBindings[UP_KEY];
     delete this.player.keyBindings[DOWN_KEY];
-    
-    this.score = 0;
-    var obstacles = [new Obstacle(), new Obstacle()];
 
     this.update = function() {
 	count++;
